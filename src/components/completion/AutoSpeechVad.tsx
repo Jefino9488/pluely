@@ -20,7 +20,8 @@ export const AutoSpeechVAD = ({
   setEnableVAD,
 }: AutoSpeechVADProps) => {
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const { selectedSttProvider, allSttProviders } = useApp();
+  const { selectedSttProvider, allSttProviders, transcriptionOnlyMode } =
+    useApp();
 
   const vad = useMicVAD({
     userSpeakingThreshold: 0.6,
@@ -68,7 +69,15 @@ export const AutoSpeechVAD = ({
         });
 
         if (transcription) {
-          submit(transcription);
+          // If transcription-only mode is enabled, set the input value instead of submitting
+          if (transcriptionOnlyMode) {
+            setState((prev: any) => ({
+              ...prev,
+              input: prev.input ? `${prev.input} ${transcription}` : transcription,
+            }));
+          } else {
+            submit(transcription);
+          }
         }
       } catch (error) {
         console.error("Failed to transcribe audio:", error);

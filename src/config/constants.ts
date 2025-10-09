@@ -15,6 +15,7 @@ export const STORAGE_KEYS = {
   CUSTOMIZABLE: "customizable",
   PLUELY_API_ENABLED: "pluely_api_enabled",
   SHORTCUTS: "shortcuts",
+  TRANSCRIPTION_ONLY_MODE: "transcription_only_mode",
 } as const;
 
 // Max number of files that can be attached to a message

@@ -104,6 +104,7 @@ export function useSystemAudio() {
     selectedAIProvider,
     allAiProviders,
     systemPrompt,
+    transcriptionOnlyMode,
   } = useApp();
   const abortControllerRef = useRef<AbortController | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -275,19 +276,25 @@ export function useSystemAudio() {
                 setLastTranscription(transcription);
                 setError("");
 
-                const effectiveSystemPrompt = useSystemPrompt
-                  ? systemPrompt || DEFAULT_SYSTEM_PROMPT
-                  : contextContent || DEFAULT_SYSTEM_PROMPT;
+                // Skip AI processing if transcription-only mode is enabled
+                if (transcriptionOnlyMode) {
+                  // Just show the transcription, no AI processing
+                  setIsPopoverOpen(true);
+                } else {
+                  const effectiveSystemPrompt = useSystemPrompt
+                    ? systemPrompt || DEFAULT_SYSTEM_PROMPT
+                    : contextContent || DEFAULT_SYSTEM_PROMPT;
 
-                const previousMessages = conversation.messages.map((msg) => {
-                  return { role: msg.role, content: msg.content };
-                });
+                  const previousMessages = conversation.messages.map((msg) => {
+                    return { role: msg.role, content: msg.content };
+                  });
 
-                await processWithAI(
-                  transcription,
-                  effectiveSystemPrompt,
-                  previousMessages
-                );
+                  await processWithAI(
+                    transcription,
+                    effectiveSystemPrompt,
+                    previousMessages
+                  );
+                }
               } else {
                 setError("Received empty transcription");
               }
@@ -317,6 +324,7 @@ export function useSystemAudio() {
     selectedSttProvider,
     allSttProviders,
     conversation.messages.length,
+    transcriptionOnlyMode,
   ]);
 
   // Context management functions
@@ -389,6 +397,13 @@ export function useSystemAudio() {
   const handleQuickActionClick = async (action: string) => {
     setLastTranscription(action); // Show the action as if it were a transcription
     setError("");
+
+    // Skip AI processing if transcription-only mode is enabled
+    if (transcriptionOnlyMode) {
+      // Just show the action text, no AI processing
+      setIsPopoverOpen(true);
+      return;
+    }
 
     const effectiveSystemPrompt = useSystemPrompt
       ? systemPrompt || DEFAULT_SYSTEM_PROMPT

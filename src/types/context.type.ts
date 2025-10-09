@@ -45,4 +45,6 @@ export type IContextType = {
   hasActiveLicense: boolean;
   setHasActiveLicense: Dispatch<SetStateAction<boolean>>;
   getActiveLicenseStatus: () => Promise<void>;
+  transcriptionOnlyMode: boolean;
+  setTranscriptionOnlyMode: (enabled: boolean) => void;
 };

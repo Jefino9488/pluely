@@ -112,6 +112,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     safeLocalStorage.getItem(STORAGE_KEYS.PLUELY_API_ENABLED) === "true"
   );
 
+  // Transcription Only Mode State
+  const [transcriptionOnlyMode, setTranscriptionOnlyModeState] =
+    useState<boolean>(
+      safeLocalStorage.getItem(STORAGE_KEYS.TRANSCRIPTION_ONLY_MODE) === "true"
+    );
+
   const getActiveLicenseStatus = async () => {
     const response: { is_active: boolean } = await invoke(
       "validate_license_api"
@@ -194,6 +200,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     );
     if (savedPluelyApiEnabled !== null) {
       setPluelyApiEnabledState(savedPluelyApiEnabled === "true");
+    }
+
+    // Load Transcription Only Mode state
+    const savedTranscriptionOnlyMode = safeLocalStorage.getItem(
+      STORAGE_KEYS.TRANSCRIPTION_ONLY_MODE
+    );
+    if (savedTranscriptionOnlyMode !== null) {
+      setTranscriptionOnlyModeState(savedTranscriptionOnlyMode === "true");
     }
   };
 
@@ -389,6 +403,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     loadData();
   };
 
+  const setTranscriptionOnlyMode = (enabled: boolean) => {
+    setTranscriptionOnlyModeState(enabled);
+    safeLocalStorage.setItem(
+      STORAGE_KEYS.TRANSCRIPTION_ONLY_MODE,
+      String(enabled)
+    );
+  };
+
   // Create the context value (extend IContextType accordingly)
   const value: IContextType = {
     systemPrompt,
@@ -413,6 +435,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     hasActiveLicense,
     setHasActiveLicense,
     getActiveLicenseStatus,
+    transcriptionOnlyMode,
+    setTranscriptionOnlyMode,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
